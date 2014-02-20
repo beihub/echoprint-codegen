@@ -1,6 +1,6 @@
 # Version of echoprint, as a list. Is expanded out
 # for various version numbers.
-EP_VERSION := 4 1 1
+EP_VERSION := 4 1 2
 VERSION := $(word 1, $(EP_VERSION)).$(word 2, $(EP_VERSION)).$(word 3, $(EP_VERSION))
 VERSION_MAJ := $(word 1, $(EP_VERSION))
 VERSION_COMPAT := $(word 1, $(EP_VERSION)).$(word 2, $(EP_VERSION))
@@ -9,7 +9,7 @@ CXX=g++
 CC=gcc
 #OPTFLAGS=-g -O0
 OPTFLAGS=-O3 -DBOOST_UBLAS_NDEBUG -DNDEBUG
-BOOST_CFLAGS=-I/usr/local/include/boost-1_35
+BOOST_CFLAGS=-I/usr/include/boost
 TAGLIB_CFLAGS=`taglib-config --cflags`
 TAGLIB_LIBS=`taglib-config --libs`
 CXXFLAGS=-Wall $(BOOST_CFLAGS) $(TAGLIB_CFLAGS) -fPIC $(OPTFLAGS)
@@ -41,7 +41,7 @@ else
 endif
 
 echoprint-codegen: $(MODULES) main.o
-	$(CXX) $(MODULES) $(LDFLAGS) main.o -o ../echoprint-codegen
+	$(CXX) $(MODULES) main.o -o ../echoprint-codegen $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -69,11 +69,11 @@ LIBDIR ?= /lib
 INCLUDEDIR ?= /include
 
 install: all
-	mkdir -p $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(BINDIR)
 	install ../echoprint-codegen $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(INCLUDEDIR)/echoprint
 	install -pm 644 Codegen.h $(DESTDIR)$(INCLUDEDIR)/echoprint/
-	mkdir -p $(DESTDIR)$(LIBDIR)
+	install -d $(DESTDIR)$(LIBDIR)
 ifeq ($(UNAME),Darwin)
 	install -m 755 libcodegen.$(VERSION).dylib $(DESTDIR)$(LIBDIR)
 	ln -fs $(DESTDIR)$(LIBDIR)/libcodegen.$(VERSION) $(DESTDIR)$(LIBDIR)/libcodegen.$(VERSION_MAJ).dylib
